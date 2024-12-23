@@ -1,8 +1,8 @@
-import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import javax.swing.*;
 
-public class CustomRC4Cipher {
+public class RC4Cipher {
     private static final String CHARACTER_SET = "abcdefghijklmnopqrstuvwxyz" +
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
             "абвгдеёжзийклмнопрстуфхцчшщъыьэюя" +
@@ -49,6 +49,7 @@ public class CustomRC4Cipher {
         Iterator<Integer> keystream = generateKeystream(state);
         StringBuilder output = new StringBuilder();
 
+        System.out.println("Шифрование:");
         for (char ch : input.toCharArray()) {
             if (!CHARACTER_SET.contains(String.valueOf(ch))) {
                 output.append(ch);
@@ -57,7 +58,13 @@ public class CustomRC4Cipher {
             int keystreamValue = keystream.next();
             int charIndex = CHARACTER_SET.indexOf(ch);
             int encryptedIndex = (charIndex + keystreamValue) % CHARACTER_SET.length();
-            output.append(CHARACTER_SET.charAt(encryptedIndex));
+            char encryptedChar = CHARACTER_SET.charAt(encryptedIndex);
+            
+            // Выводим действия на каждом шаге шифрования
+            System.out.printf("Текущий символ: '%c', Индекс: %d, Генерируемый ключ: %d, Зашифрованный индекс: %d, Зашифрованный символ: '%c'%n", 
+                    ch, charIndex, keystreamValue, encryptedIndex, encryptedChar);
+            
+            output.append(encryptedChar);
         }
         return output.toString();
     }
@@ -67,6 +74,7 @@ public class CustomRC4Cipher {
         Iterator<Integer> keystream = generateKeystream(state);
         StringBuilder output = new StringBuilder();
 
+        System.out.println("Расшифровка:");
         for (char ch : encrypted.toCharArray()) {
             if (!CHARACTER_SET.contains(String.valueOf(ch))) {
                 output.append(ch);
@@ -75,7 +83,13 @@ public class CustomRC4Cipher {
             int keystreamValue = keystream.next();
             int charIndex = CHARACTER_SET.indexOf(ch);
             int decryptedIndex = (charIndex - keystreamValue + CHARACTER_SET.length()) % CHARACTER_SET.length();
-            output.append(CHARACTER_SET.charAt(decryptedIndex));
+            char decryptedChar = CHARACTER_SET.charAt(decryptedIndex);
+            
+            // Выводим действия на каждом шаге расшифровки
+            System.out.printf("Текущий символ: '%c', Индекс: %d, Генерируемый ключ: %d, Расшифрованный индекс: %d, Расшифрованный символ: '%c'%n", 
+                    ch, charIndex, keystreamValue, decryptedIndex, decryptedChar);
+            
+            output.append(decryptedChar);
         }
         return output.toString();
     }
@@ -90,68 +104,70 @@ public class CustomRC4Cipher {
             System.out.print("Выберите опцию: ");
             String choice = scanner.nextLine();
 
-            if (choice.equals("1")) {
-                System.out.print("Введите текст: ");
-                String plaintext = scanner.nextLine();
-                System.out.print("Введите ключ: ");
-                String key = scanner.nextLine();
-                String encrypted = encrypt(key, plaintext);
-                System.out.println("Зашифрованный текст: " + encrypted);
-            } else if (choice.equals("2")) {
-                System.out.print("Введите зашифрованный текст: ");
-                String encryptedText = scanner.nextLine();
-                System.out.print("Введите ключ: ");
-                String key = scanner.nextLine();
-                String decrypted = decrypt(key, encryptedText);
-                System.out.println("Расшифрованный текст: " + decrypted);
-            } else if (choice.equals("3")) {
-                JFileChooser fileChooser = new JFileChooser();
-                System.out.println("Выберите файл для шифрования.");
-                if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    File inputFile = fileChooser.getSelectedFile();
-                    System.out.println("Выберите место для сохранения зашифрованного файла.");
-                    if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                        File outputFile = fileChooser.getSelectedFile();
-                        System.out.print("Введите ключ для шифрования: ");
+            switch (choice) {
+                case "1" ->                     {
+                        System.out.print("Введите текст: ");
+                        String plaintext = scanner.nextLine();
+                        System.out.print("Введите ключ: ");
                         String key = scanner.nextLine();
-                        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-                             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
-                            String line;
-                            while ((line = reader.readLine()) != null) {
-                                writer.write(encrypt(key, line));
-                                writer.newLine();
-                            }
-                        } catch (IOException e) {
-                            System.err.println("Ошибка при работе с файлами: " + e.getMessage());
-                        }
-                        System.out.println("Файл зашифрован и сохранён как " + outputFile.getAbsolutePath());
+                        String encrypted = encrypt(key, plaintext);
+                        System.out.println("Зашифрованный текст: " + encrypted);
                     }
-                }
-            } else if (choice.equals("4")) {
-                JFileChooser fileChooser = new JFileChooser();
-                System.out.println("Выберите файл для расшифрования.");
-                if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    File inputFile = fileChooser.getSelectedFile();
-                    System.out.println("Выберите место для сохранения расшифрованного файла.");
-                    if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                        File outputFile = fileChooser.getSelectedFile();
-                        System.out.print("Введите ключ для расшифрования: ");
+                case "2" ->                     {
+                        System.out.print("Введите зашифрованный текст: ");
+                        String encryptedText = scanner.nextLine();
+                        System.out.print("Введите ключ: ");
                         String key = scanner.nextLine();
-                        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-                             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
-                            String line;
-                            while ((line = reader.readLine()) != null) {
-                                writer.write(decrypt(key, line));
-                                writer.newLine();
-                            }
-                        } catch (IOException e) {
-                            System.err.println("Ошибка при работе с файлами: " + e.getMessage());
-                        }
-                        System.out.println("Файл расшифрован и сохранён как " + outputFile.getAbsolutePath());
+                        String decrypted = decrypt(key, encryptedText);
+                        System.out.println("Расшифрованный текст: " + decrypted);
                     }
-                }
-            } else {
-                System.out.println("Неверный выбор. Пожалуйста, попробуйте снова.");
+                case "3" ->                     {
+                        JFileChooser fileChooser = new JFileChooser();
+                        System.out.println("Выберите файл для шифрования.");
+                        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                            File inputFile = fileChooser.getSelectedFile();
+                            System.out.println("Выберите место для сохранения зашифрованного файла.");
+                            if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+                                File outputFile = fileChooser.getSelectedFile();
+                                System.out.print("Введите ключ для шифрования: ");
+                                String key = scanner.nextLine();
+                                try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+                                        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
+                                    String line;
+                                    while ((line = reader.readLine()) != null) {
+                                        writer.write(encrypt(key, line));
+                                        writer.newLine();
+                                    }
+                                } catch (IOException e) {
+                                    System.err.println("Ошибка при работе с файлами: " + e.getMessage());
+                                }
+                                System.out.println("Файл зашифрован и сохранён как " + outputFile.getAbsolutePath());
+                            }
+                        }                          }
+                case "4" ->                     {
+                        JFileChooser fileChooser = new JFileChooser();
+                        System.out.println("Выберите файл для расшифрования.");
+                        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                            File inputFile = fileChooser.getSelectedFile();
+                            System.out.println("Выберите место для сохранения расшифрованного файла.");
+                            if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+                                File outputFile = fileChooser.getSelectedFile();
+                                System.out.print("Введите ключ для расшифрования: ");
+                                String key = scanner.nextLine();
+                                try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+                                        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
+                                    String line;
+                                    while ((line = reader.readLine()) != null) {
+                                        writer.write(decrypt(key, line));
+                                        writer.newLine();
+                                    }
+                                } catch (IOException e) {
+                                    System.err.println("Ошибка при работе с файлами: " + e.getMessage());
+                                }
+                                System.out.println("Файл расшифрован и сохранён как " + outputFile.getAbsolutePath());
+                            }
+                        }                          }
+                default -> System.out.println("Неверный выбор. Пожалуйста, попробуйте снова.");
             }
         }
     }
