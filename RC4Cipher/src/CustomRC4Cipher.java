@@ -3,10 +3,9 @@ import java.util.*;
 import javax.swing.*;
 
 public class CustomRC4Cipher {
+public class RC4Cipher {
     private static final String CHARACTER_SET = "abcdefghijklmnopqrstuvwxyz" +
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-            "абвгдеёжзийклмнопрстуфхцчшщъыьэюя" +
-            "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ" +
+            
             "0123456789!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?~ ";
             
     private static List<Integer> initializeState(String key) {
