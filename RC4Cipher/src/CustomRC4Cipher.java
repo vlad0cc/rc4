@@ -1,20 +1,17 @@
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-
-public class RC4Cipher {
+public class CustomRC4Cipher {
     private static final String CHARACTER_SET = "abcdefghijklmnopqrstuvwxyz" +
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
             "абвгдеёжзийклмнопрстуфхцчшщъыьэюя" +
             "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ" +
             "0123456789!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?~ ";
-
     private static List<Integer> initializeState(String key) {
         List<Integer> state = new ArrayList<>();
         for (int index = 0; index < CHARACTER_SET.length(); index++) {
             state.add(index);
         }
-
         int keyLength = key.length();
         int j = 0;
         for (int i = 0; i < CHARACTER_SET.length(); i++) {
@@ -23,12 +20,10 @@ public class RC4Cipher {
         }
         return state;
     }
-
     private static Iterator<Integer> generateKeystream(List<Integer> state) {
         return new Iterator<>() {
             private int i = 0;
             private int j = 0;
-
             @Override
             public boolean hasNext() {
                 return true;
